@@ -19,6 +19,7 @@ def Args():
     parser.add_argument("--num_heads", default=1, type=int)
     parser.add_argument("--lam",default=0.1, type=float)
     parser.add_argument("--load_from", default="models_local/resnet101_voc07_head1_lam0.1_94.7.pth", type=str)
+    parser.add_argument("--cutmix", default=None, type=str) # the path to load cutmix-pretrained backbone
     # dataset
     parser.add_argument("--dataset", default="voc07", type=str)
     parser.add_argument("--num_cls", default=20, type=int)
