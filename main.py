@@ -6,6 +6,7 @@ import torch.optim as optim
 from torch.utils.data import DataLoader
 from pipeline.resnet_csra import ResNet_CSRA
 from pipeline.vit_csra import VIT_B16_224_CSRA, VIT_L16_224_CSRA, VIT_CSRA
+from pipeline.resnet import ResNet
 from pipeline.dataset import DataSet
 from utils.evaluation.eval import evaluation
 from utils.evaluation.warmUpLR import WarmUpLR
@@ -110,6 +111,10 @@ def main():
         model = VIT_B16_224_CSRA(cls_num_heads=args.num_heads, lam=args.lam, cls_num_cls=args.num_cls)
     if args.model == "vit_L16_224":
         model = VIT_L16_224_CSRA(cls_num_heads=args.num_heads, lam=args.lam, cls_num_cls=args.num_cls)
+    if args.model == "resnet18":
+        model = ResNet(num_classes=args.num_cls, depth=18)
+    if args.model == "resnet34":
+        model = ResNet(num_classes=args.num_cls, depth=34)
         
     model.cuda()
     if torch.cuda.device_count() > 1:
