@@ -30,13 +30,14 @@ class ResNet(ResNet):
         152: (Bottleneck, (3, 8, 36, 3))
     }
 
-    def __init__(self, num_classes, depth=18, input_dim=2048, cutmix=None):
+    def __init__(self, num_classes, depth=18, input_dim=512, cutmix=None):
         self.block, self.layers = self.arch_settings[depth]
         self.depth = depth
         super(ResNet, self).__init__(self.block, self.layers)
         self.init_weights(pretrained=True, cutmix=cutmix)
 
         self.classifier = nn.Linear(in_features=input_dim, out_features=num_classes, bias=True)
+        self.avgpool = nn.AdaptiveAvgPool2d((1, 1))
         self.loss_func = F.binary_cross_entropy_with_logits
 
     def backbone(self, x):
@@ -54,12 +55,16 @@ class ResNet(ResNet):
 
     def forward_train(self, x, target):
         x = self.backbone(x)
+        x = self.avgpool(x)
+        x = torch.flatten(x,1)
         logit = self.classifier(x)
         loss = self.loss_func(logit, target, reduction="mean")
         return logit, loss
 
     def forward_test(self, x):
         x = self.backbone(x)
+        x = self.avgpool(x)
+        x = torch.flatten(x,1)
         x = self.classifier(x)
         return x
 
