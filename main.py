@@ -115,6 +115,10 @@ def main():
         model = ResNet(num_classes=args.num_cls, depth=18)
     if args.model == "resnet34":
         model = ResNet(num_classes=args.num_cls, depth=34)
+    if args.model == "resnet18_csra":
+        model = ResNet_CSRA(num_heads=args.num_heads, lam=args.lam, num_classes=args.num_cls, cutmix=args.cutmix, depth=18, input_dim=512)
+    if args.model == "resnet34_csra":
+        model = ResNet_CSRA(num_heads=args.num_heads, lam=args.lam, num_classes=args.num_cls, cutmix=args.cutmix, depth=34, input_dim=512)
         
     model.cuda()
     if torch.cuda.device_count() > 1:
