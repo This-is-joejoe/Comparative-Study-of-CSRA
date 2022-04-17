@@ -67,6 +67,65 @@ def val(args, model, test_loader, test_file, svm):
     # cal_mAP OP OR
     evaluation(result=result_list, types=args.dataset, ann_path=test_file[0])
 
+def val_svm_logit(args, model, test_loader, train_loader, test_file):
+    model.eval()
+    print("Test on Pretrained Models")
+    result_list = []
+    activation = {}
+    pre_svm_features =[]
+    pre_svm_label=[]
+    # calculate the feature for svm
+    for index, data in enumerate(tqdm(train_loader)):
+        img = data['img'].cuda()
+        target = data['target'].cuda()
+        img_path = data['img_path']
+        pre_svm_label.append(data['target'].numpy().tolist())
+        model.classifier.multi_head[0].softmax.register_forward_hook(get_activation('feature',activation))
+        with torch.no_grad():
+            logit = model(img)
+            pre_svm_features.append(logit.reshape((1,-1)).cpu().numpy().tolist())
+
+    pre_svm_features = np.array(pre_svm_features).reshape((len(train_loader),-1))
+    pre_svm_label = np.array(pre_svm_label).reshape((len(train_loader),-1))
+    print('shape of output of pre_svm_features ',pre_svm_features.shape)
+    print('shape of output of pre_svm_label ',pre_svm_label.shape)
+
+    #Get svm model
+    print('<SVM in training>')
+    clf = OneVsRestClassifier(SVC(gamma=0.001,probability= True, C=0.1 ),n_jobs=-1).fit(pre_svm_features, pre_svm_label)
+    
+    # calculate prediction
+    activation = {}
+    print('Model predicting')
+    post_svm_features = []
+    post_svm_label = []
+    for index, data in enumerate(tqdm(test_loader)):
+        
+        img = data['img'].cuda()
+        target = data['target'].cuda()
+        img_path = data['img_path']
+        post_svm_label.append(data['target'].numpy().tolist())
+        model.classifier.multi_head[0].softmax.register_forward_hook(get_activation('feature',activation))
+
+        with torch.no_grad():
+            logit = model(img)
+            post_svm_features.append(logit.reshape((1,-1)).cpu().numpy().tolist())
+        result = clf.predict_proba(logit.reshape((1,-1)).cpu().numpy().tolist())
+
+        for k in range(len(img_path)):
+            result_list.append(
+                {
+                    "file_name": img_path[k].split("/")[-1].split(".")[0],
+                    "scores": result[k]
+                }
+            )
+    post_svm_features = np.array(post_svm_features).reshape((len(test_loader),-1))
+    post_svm_label = np.array(post_svm_label).reshape((len(test_loader),-1))
+    post_svm_label[post_svm_label==-1] = 0
+    score = clf.score(post_svm_features,post_svm_label)
+    print("Acc : ", score)
+    # cal_mAP OP OR
+    evaluation(result=result_list, types=args.dataset, ann_path=test_file[0])
 
 def val_svm(args, model, test_loader, train_loader, test_file):
     model.eval()
