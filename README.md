@@ -4,6 +4,9 @@ The following graph and link are taken for the original CSRA paper:<br>
 
 ![attention](https://github.com/Kevinz-code/CSRA/blob/master/utils/pipeline.PNG)
 
+### BRSVM extension on CSRA
+![attention](https://github.com/This-is-joejoe/Comparative-Study-of-CSRA/blob/master/utils/CSRA_SVM.png)
+
 This package was modified and developed based on the original code for learning purposes. 
 
 ## Requirements
