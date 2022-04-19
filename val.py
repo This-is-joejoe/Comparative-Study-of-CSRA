@@ -92,7 +92,7 @@ def val_svm_logit(args, model, test_loader, train_loader, test_file):
 
     #Get svm model
     print('<SVM in training>')
-    clf = OneVsRestClassifier(SVC(gamma=0.001,probability= True, C=0.1 ),n_jobs=-1).fit(pre_svm_features, pre_svm_label)
+    clf = OneVsRestClassifier(SVC(gamma=0.001,probability= True, C=0.5 ),n_jobs=-1).fit(pre_svm_features, pre_svm_label)
     
     # calculate prediction
     activation = {}
@@ -127,7 +127,7 @@ def val_svm_logit(args, model, test_loader, train_loader, test_file):
     # cal_mAP OP OR
     evaluation(result=result_list, types=args.dataset, ann_path=test_file[0])
 
-def val_svm(args, model, test_loader, train_loader, test_file):
+def val_svm(args, model, test_loader, train_loader, test_file):#this is a test innovation 
     model.eval()
     print("Test on Pretrained Models")
     result_list = []
