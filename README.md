@@ -1,5 +1,5 @@
 # Comparative Study on CSRA with a SVM extension 
-The following graph and link are taken for the original CSRA paper:<br>
+The following graph and link are taken from the original CSRA paper:<br>
 [Residual Attention: A Simple But Effective Method for Multi-Label Recoginition](https://arxiv.org/abs/2108.02456)<br>
 
 ![attention](https://github.com/Kevinz-code/CSRA/blob/master/utils/pipeline.PNG)
